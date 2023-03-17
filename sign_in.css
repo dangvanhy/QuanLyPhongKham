@@ -1,0 +1,10 @@
+.LogInBox {
+    width: 28%;
+    margin: 100px auto;
+    background-color: rgba(0, 0, 0, 0.189);
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    border-radius: 5px;
+}
