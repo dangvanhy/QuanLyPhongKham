@@ -39,8 +39,12 @@
             Quản lý bệnh nhân
         </div>
 
-        <div class="pr-[20px] cursor-pointer" onclick="location.href='revenue_expenditure.php';">
+        <div class="pr-[20px] cursor-pointer" onclick="location.href='dossiers.php';">
             Quản lý khám bệnh
+        </div>
+
+        <div class="pr-[20px] cursor-pointer" onclick="location.href='statistical.php';">
+            Báo cáo thống kê
         </div>
     </div>
 </body>
