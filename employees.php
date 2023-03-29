@@ -29,7 +29,7 @@ $tenTaiKhoan = $_SESSION['TenTK'];
 ?>
 
 <?php
-$sql = "SELECT TenNV, GioiTinh, NgaySinh, SDT, Email, NhomThuThuat.TenNTT FROM NhanVien join NhomThuThuat on NhanVien.MaNTT = NhomThuThuat.MaNTT";
+$sql = "SELECT MaNV, TenNV, GioiTinh, NgaySinh, SDT, Email, NhomThuThuat.TenNTT FROM NhanVien join NhomThuThuat on NhanVien.MaNTT = NhomThuThuat.MaNTT";
 $stmt = $conn->prepare($sql);
 $query = $stmt->execute();
 $result = array();
@@ -60,7 +60,7 @@ if (!empty($_POST['submit'])) {
         $sql = "INSERT INTO nhanvien (TenNV, GioiTinh, NgaySinh, SDT, Email, MaNTT) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$tenNV, $gioiTinh, $ngaySinh, $sdt, $email, $maNTT]);
-        if($query) {
+        if ($query) {
             header('location: employees.php');
         }
     }
@@ -104,6 +104,8 @@ if (!empty($_POST['submit'])) {
                     <th>Số điện thoại</th>
                     <th>Email</th>
                     <th>Tên nhóm thủ thuật</th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <?php foreach ($result as $item): ?>
                     <tr>
@@ -130,9 +132,17 @@ if (!empty($_POST['submit'])) {
                         <td>
                             <?php echo $item['TenNTT'] ?>
                         </td>
+                        <td>
+                            <a href="./edit_employee.php?id=<?php echo $item['MaNV'] ?>">Sửa</a>
+                        </td>
+                        <td>
+                            <button class="delete-btn" data-id="<?php echo $item['MaNV'] ?>">Xóa</button>
+                        </td>
                     </tr>
                 <?php endforeach ?>
             </table>
+
+            <div id="edit_employee"></div>
         </div>
 
         <div id="formNV" class="w-[50%] hidden bg-[#8e93b7dd] rounded-md">
@@ -205,6 +215,8 @@ if (!empty($_POST['submit'])) {
         const btnAdd = document.getElementById('btnAdd');
         const btnList = document.getElementById('btnList');
 
+        const editEmployee = document.getElementById('edit_employee');
+
         const tableNV = document.getElementById('tableNV');
         const formNV = document.getElementById('formNV');
 
@@ -217,6 +229,41 @@ if (!empty($_POST['submit'])) {
             tableNV.style.display = 'none';
             formNV.style.display = 'block';
         })
+
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', deleteEmployee);
+        });
+
+        function deleteEmployee(event) {
+            const employeeId = event.target.getAttribute('data-id');
+            if (confirm('Bạn có chắc muốn xóa nhân viên này không?')) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'delete_employee.php', true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.onload = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        loadEmployeeData();
+                    } else {
+                        console.log('Xóa nhân viên không thành công.');
+                    }
+                };
+                xhr.send(`employeeId=${employeeId}`);
+            }
+        }
+
+        function loadEmployeeData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'load_employee.php', true);
+            xhr.onload = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    document.getElementById('employee-table').innerHTML = this.responseText;
+                } else {
+                    console.log('Tải dữ liệu không thành công.');
+                }
+            };
+            xhr.send();
+        }
     </script>
 </body>
 
